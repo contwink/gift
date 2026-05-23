@@ -1123,8 +1123,8 @@
 
 <script>
 // ==================== 配置区 ====================
-const DEEPSEEK_API_KEY = "sk-b11a562d29a3468aab2d38edff1afcf8";
-const BOCHA_API_KEY = "sk-12410305b4ee4f89ba07dd84f8371f9f";
+const DEEPSEEK_API_KEY = "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+const BOCHA_API_KEY = "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 
 // 播放列表
 const playlist = [
@@ -1471,6 +1471,11 @@ giftBoxReveal.addEventListener('click',()=>{
         setTimeout(()=>cardScreen.classList.add('active'),50);
         setTimeout(()=>{
             loadSong(0);
+            bgMusic.play().catch(() => {});
+            isMusicPlaying = true;
+            musicControl.classList.add('playing');
+            playerCover.classList.add('playing');
+            playPauseBtn.innerHTML = '\u{23F8}\u{FE0F}';
             // 贺卡页面持续飘落花瓣
             window._cardPetalsInterval = setInterval(() => launch3DPetals(3), 600);
         },500);
