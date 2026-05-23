@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>June · 生日礼物</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { overflow-x: hidden; font-family: -apple-system, 'PingFang SC', 'Segoe UI', sans-serif; background: #000; }
+        .model-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+        .model-container iframe { width: 100%; height: 100%; border: none; }
+        .music-control {
+            position: fixed; bottom: 20px; left: 20px; width: 48px; height: 48px;
+            border-radius: 50%; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.2); color: white; font-size: 22px;
+            cursor: pointer; z-index: 200; display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s;
+        }
+        .music-control:hover { transform: scale(1.1); }
+        .chat-panel {
+            position: fixed; bottom: 16px; right: 16px; left: auto; width: 360px; max-width: calc(100vw - 32px);
+            background: rgba(20,20,35,0.85); backdrop-filter: blur(20px); border-radius: 28px;
+            border: 1px solid rgba(255,255,255,0.2); color: white; z-index: 100;
+            display: flex; flex-direction: column; overflow: hidden;
+        }
+        .chat-header { padding: 14px 18px; background: linear-gradient(135deg,#ff8c42,#ff6f4a); display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: 600; }
+        .close-btn { background: rgba(255,255,255,0.2); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; }
+        .chat-messages { height: 350px; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+        .message { max-width: 85%; padding: 10px 14px; border-radius: 20px; font-size: 14px; line-height: 1.45; word-break: break-word; }
+        .message.bot { background: rgba(255,255,255,0.15); align-self: flex-start; border-bottom-left-radius: 5px; }
+        .message.user { background: linear-gradient(135deg,#ff8c42,#ff6f4a); align-self: flex-end; border-bottom-right-radius: 5px; }
+        .chat-input-area { display: flex; border-top: 1px solid rgba(255,255,255,0.1); padding: 12px; gap: 10px; background: rgba(0,0,0,0.2); }
+        #chatInput { flex: 1; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); padding: 12px 16px; border-radius: 30px; color: white; outline: none; font-size: 15px; }
+        #chatInput::placeholder { color: rgba(255,255,255,0.4); }
+        #sendBtn { background: linear-gradient(135deg,#ff8c42,#ff6f4a); border: none; color: white; font-weight: 600; padding: 12px 22px; border-radius: 30px; cursor: pointer; transition: transform 0.2s; }
+        #sendBtn:hover { transform: scale(1.05); }
+        #sendBtn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .open-chat-btn { position: fixed; bottom: 20px; right: 20px; width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg,#ff8c42,#ff6f4a); font-size: 26px; cursor: pointer; display: none; z-index: 99; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.3); color: white; transition: transform 0.3s; }
+        .open-chat-btn:hover { transform: scale(1.1); }
+        .thinking { display: inline-flex; align-items: center; gap: 4px; color: rgba(255,255,255,0.7); font-style: italic; }
+        .thinking-dots { display: inline-flex; gap: 3px; }
+        .thinking-dots span { width: 6px; height: 6px; background: rgba(255,255,255,0.6); border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
+        .thinking-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .thinking-dots span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+        .status { font-size: 11px; text-align: center; color: rgba(255,255,255,0.5); padding: 8px; background: rgba(0,0,0,0.2); }
+        .status.error { color: #ff6f4a; }
+        .status.online { color: #7ee787; }
+        .search-badge { font-size: 10px; background: rgba(255,140,66,0.3); padding: 2px 6px; border-radius: 10px; margin-left: 6px; }
+        @media (max-width: 500px) { 
+            .chat-panel { left: 16px; right: 16px; width: auto; }
+            .chat-messages { height: 300px; } 
+        }
+    </style>
+</head>
+<body>
+    <div class="model-container">
+        <iframe title="June" frameborder="0" allowfullscreen allow="autoplay; fullscreen; xr-spatial-tracking" 
+            src="https://sketchfab.com/models/fa95a1c5149d4aa78c079094c7d77fa0/embed?autospin=1&autostart=1&preload=1&ui_controls=1&ui_infobar=0&ui_help=0&ui_settings=0">
+        </iframe>
+    </div>
+
+    <div class="music-control" id="musicControl">🎵</div>
+
+    <div class="chat-panel" id="chatPanel">
+        <div class="chat-header">
+            <span>🤍 June · 专属伙伴</span>
+            <button class="close-btn" id="closeChatBtn">−</button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot">🎂 生日快乐！我是 June 💕<<br><br>我记得：<br>• 2000年6月2号 · 沈阳 · 日本读博<br>• 喜欢巧克力 🍫  ·  不吃猪肉和榴莲 ❌<<br><br>想聊什么都可以～<<br><br><small style="opacity:0.7">💡 问我"今天天气"、"最新新闻"，我会自动联网搜索哦</small></div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="chatInput" placeholder="和 June 聊聊天..." autocomplete="off" maxlength="200">
+            <button id="sendBtn">发送</button>
+        </div>
+        <div class="status" id="status">✨ 在线</div>
+    </div>
+    <button id="openChatBtn" class="open-chat-btn">💬</button>
+
+    <!-- 背景音乐：和 index.html 放在同一目录，路径用 ./bgm.mp3 -->
+    <audio id="bgMusic" loop preload="auto">
+        <source src="./bgm.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // ==================== 配置区：填你的两个 Key ====================
+        const DEEPSEEK_API_KEY = "sk-b11a562d29a3468aab2d38edff1afcf8"; // DeepSeek Key
+        const BOCHA_API_KEY    = "sk-12410305b4ee4f89ba07dd84f8371f9f"; // 博查 Key
+        // ==============================================================
+
+        // ========== 获取 DOM 元素（全部放最前面，避免时序问题） ==========
+        const musicControl = document.getElementById('musicControl');
+        const bgMusic = document.getElementById('bgMusic');
+        const chatPanel = document.getElementById('chatPanel');
+        const closeBtn = document.getElementById('closeChatBtn');
+        const openBtn = document.getElementById('openChatBtn');
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+        const sendButton = document.getElementById('sendBtn');
+        const statusDiv = document.getElementById('status');
+
+        // ========== 音乐控制 ==========
+        let isMusicPlaying = false;
+        let musicAutoPlayed = false;
+        bgMusic.volume = 0.35;
+
+        async function toggleMusic() {
+            try {
+                if (isMusicPlaying) {
+                    bgMusic.pause();
+                    musicControl.innerHTML = '🎵';
+                    musicControl.style.opacity = '0.7';
+                    isMusicPlaying = false;
+                } else {
+                    await bgMusic.play();
+                    musicControl.innerHTML = '🎶';
+                    musicControl.style.opacity = '1';
+                    isMusicPlaying = true;
+                }
+            } catch (e) {
+                console.log('播放失败:', e);
+            }
+        }
+
+        musicControl.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleMusic();
+        });
+
+        // 首次点击页面任意位置，自动播放音乐
+        document.body.addEventListener('click', function autoPlayMusic() {
+            if (!musicAutoPlayed && bgMusic.paused) {
+                toggleMusic();
+                musicAutoPlayed = true;
+            }
+        }, { once: true });
+
+        // ========== 聊天面板控制 ==========
+        const toggleChat = (show) => {
+            if (show) {
+                chatPanel.style.display = 'flex';
+                openBtn.style.display = 'none';
+                setTimeout(() => chatInput.focus(), 100);
+            } else {
+                chatPanel.style.display = 'none';
+                openBtn.style.display = 'flex';
+            }
+        };
+
+        closeBtn.addEventListener('click', () => toggleChat(false));
+        openBtn.addEventListener('click', () => toggleChat(true));
+
+        // ========== 消息管理 ==========
+        let messages = [{ 
+            role: "system", 
+            content: "你是 June，主人的专属机器人。记住：生日2000年6月2号，沈阳人，日本读博，喜欢巧克力，不吃猪肉和榴莲。温暖可爱，回复简短亲切，像朋友聊天一样自然。如果提供了网络搜索结果，请基于这些结果回答，并适当提及信息来源。" 
+        }];
+        let isSending = false;
+
+        function addMessage(content, sender, isThinking = false, isSearch = false) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${sender}`;
+            if (isThinking) {
+                msgDiv.innerHTML = `<div class="thinking">June 思考中<div class="thinking-dots"><span></span><span></span><span></span></div></div>`;
+                msgDiv.dataset.thinking = 'true';
+            } else {
+                msgDiv.innerHTML = content.replace(/\n/g, '<br>');
+                if (isSearch) {
+                    const badge = document.createElement('span');
+                    badge.className = 'search-badge';
+                    badge.textContent = '🔍 已联网';
+                    msgDiv.appendChild(document.createElement('br'));
+                    msgDiv.appendChild(document.createElement('br'));
+                    msgDiv.appendChild(badge);
+                }
+            }
+            chatMessages.appendChild(msgDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            return msgDiv;
+        }
+
+        function removeThinking() {
+            const thinkingMsg = chatMessages.querySelector('[data-thinking="true"]');
+            if (thinkingMsg) thinkingMsg.remove();
+        }
+
+        // ========== 联网搜索判断 ==========
+        function needSearch(query) {
+            const keywords = ['今天','现在','最新','新闻','天气','股价','汇率','比赛','直播','刚刚','昨日','本周','这周','本月','这个月','今年','2026','热搜','多少钱','价格','几点'];
+            return keywords.some(k => query.includes(k));
+        }
+
+        function getFreshness(query) {
+            if (query.includes('今天') || query.includes('现在') || query.includes('实时') || query.includes('几点')) return 'oneDay';
+            if (query.includes('本周') || query.includes('这周') || query.includes('最近')) return 'oneWeek';
+            if (query.includes('本月') || query.includes('这个月')) return 'oneMonth';
+            return 'noLimit';
+        }
+
+        // ========== 博查联网搜索 ==========
+        async function searchWeb(query) {
+            try {
+                statusDiv.innerHTML = "🔍 正在联网搜索...";
+                const res = await fetch('https://api.bochaai.com/v1/web-search', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${BOCHA_API_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        query: query,
+                        freshness: getFreshness(query),
+                        summary: true,
+                        count: 5
+                    })
+                });
+                
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                
+                const pages = data.data?.webPages?.value || [];
+                if (pages.length === 0) return null;
+                
+                return pages.map((p, i) => 
+                    `[${i+1}] ${p.name}\n来源：${p.siteName || p.displayUrl || p.url}\n时间：${p.datePublished || '未知'}\n摘要：${p.summary || p.snippet || ''}`
+                ).join('\n\n');
+            } catch (e) {
+                console.error('博查搜索失败:', e);
+                return null;
+            }
+        }
+
+        // ========== 调用 DeepSeek ==========
+        async function callDeepSeek(userMessage, searchContext = null) {
+            let isSearch = false;
+            let apiUserContent = userMessage;
+            
+            if (searchContext) {
+                isSearch = true;
+                apiUserContent = `用户问题：${userMessage}\n\n以下是从网络搜索获取的最新相关信息，请基于这些信息回答用户问题。如果信息与问题无关，请忽略并用你的知识回答：\n\n${searchContext}\n\n请回答用户的问题，可以适当引用来源。`;
+            }
+            
+            const apiMessages = [...messages, { role: "user", content: apiUserContent }];
+            
+            try {
+                statusDiv.innerHTML = isSearch ? "💭 June 正在整理网络信息..." : "💭 June 正在输入...";
+                sendButton.disabled = true;
+                
+                const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        model: 'deepseek-chat',
+                        messages: apiMessages,
+                        temperature: 0.8,
+                        max_tokens: 800
+                    })
+                });
+                
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
+                const data = await response.json();
+                const reply = data.choices[0].message.content;
+                
+                messages.push({ role: "user", content: userMessage });
+                messages.push({ role: "assistant", content: reply });
+                
+                if (messages.length > 20) {
+                    messages = [messages[0], ...messages.slice(-18)];
+                }
+                
+                statusDiv.innerHTML = "✨ 在线";
+                statusDiv.classList.add('online');
+                setTimeout(() => statusDiv.classList.remove('online'), 2000);
+                
+                return { reply, isSearch };
+            } catch (error) {
+                console.error("DeepSeek 调用失败:", error);
+                statusDiv.innerHTML = "⚠️ 网络开小差了";
+                statusDiv.classList.add('error');
+                setTimeout(() => statusDiv.classList.remove('error'), 3000);
+                return { reply: `网络不太好～ 你刚才说：「${userMessage}」❤️`, isSearch: false };
+            } finally {
+                sendButton.disabled = false;
+            }
+        }
+
+        // ========== 发送消息主流程 ==========
+        async function sendMessage() {
+            const text = chatInput.value.trim();
+            if (!text || isSending) return;
+            
+            isSending = true;
+            addMessage(text, 'user');
+            chatInput.value = '';
+            addMessage('', 'bot', true);
+            
+            let searchContext = null;
+            
+            if (needSearch(text)) {
+                searchContext = await searchWeb(text);
+            }
+            
+            const { reply, isSearch } = await callDeepSeek(text, searchContext);
+            removeThinking();
+            addMessage(reply, 'bot', false, isSearch);
+            
+            isSending = false;
+        }
+
+        sendButton.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // ========== 恢复历史对话 ==========
+        const savedMessages = localStorage.getItem('june_chat_history');
+        if (savedMessages) {
+            try {
+                const parsed = JSON.parse(savedMessages);
+                if (parsed.length > 1) {
+                    messages = parsed;
+                    parsed.slice(1).forEach(msg => {
+                        addMessage(msg.content, msg.role === 'user' ? 'user' : 'bot');
+                    });
+                }
+            } catch (e) {}
+        }
+
+        window.addEventListener('beforeunload', () => {
+            localStorage.setItem('june_chat_history', JSON.stringify(messages));
+        });
+    </script>
+</body>
+</html>
