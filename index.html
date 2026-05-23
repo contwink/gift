@@ -1427,6 +1427,17 @@ cardFront.addEventListener('click', () => {
     setTimeout(() => typeNextChar(), 600);
     // 翻到背面才开始8秒计时
     setTimeout(() => startProgress(), 800);
+    // ========== 贺卡翻面时播放音乐（双重保障）==========
+    // 点击贺卡是用户交互，浏览器允许播放
+    // 如果礼物盒点击时没播成功，这里再给一次机会
+    if (!isMusicPlaying) {
+        bgMusic.play().then(() => {
+            isMusicPlaying = true;
+            musicControl.classList.add('playing');
+            playerCover.classList.add('playing');
+            playPauseBtn.innerHTML = '\u{23F8}\u{FE0F}';
+        }).catch(() => {});
+    }
 });
 
 // ==================== 进度条 ====================
