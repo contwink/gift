@@ -3,124 +3,453 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>June · 生日礼物</title>
+    <title>June · 专属礼物</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { overflow-x: hidden; font-family: -apple-system, 'PingFang SC', 'Segoe UI', sans-serif; background: #000; }
+        body { overflow: hidden; font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+
+        /* ========== 开场礼物页 ========== */
+        .gift-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #ffe4d6 0%, #ffd4c2 30%, #ffc8b8 60%, #ffe8e0 100%);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 1000; transition: opacity 1s ease, transform 1s ease;
+        }
+        .gift-screen.hidden {
+            opacity: 0; transform: scale(1.2); pointer-events: none;
+        }
+
+        /* 标题 */
+        .gift-title {
+            font-size: 28px; color: #8b4513; font-weight: 700;
+            margin-bottom: 40px; text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            animation: fadeInDown 1s ease;
+        }
+        @keyframes fadeInDown {
+            0% { opacity: 0; transform: translateY(-30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 3D 礼物盒 */
+        .gift-box {
+            width: 180px; height: 180px; position: relative;
+            transform-style: preserve-3d; animation: giftFloat 3s ease-in-out infinite;
+            cursor: pointer;
+        }
+        @keyframes giftFloat {
+            0%, 100% { transform: translateY(0) rotateY(0deg); }
+            25% { transform: translateY(-15px) rotateY(5deg); }
+            50% { transform: translateY(0) rotateY(0deg); }
+            75% { transform: translateY(-10px) rotateY(-5deg); }
+        }
+
+        .gift-box-face {
+            position: absolute; width: 180px; height: 180px;
+            background: linear-gradient(135deg, #ff6f4a, #ff8c42);
+            border: 3px solid #fff; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 60px; box-shadow: 0 8px 32px rgba(255,140,66,0.3);
+        }
+        .gift-box-front { transform: translateZ(90px); }
+        .gift-box-back { transform: rotateY(180deg) translateZ(90px); }
+        .gift-box-right { transform: rotateY(90deg) translateZ(90px); }
+        .gift-box-left { transform: rotateY(-90deg) translateZ(90px); }
+        .gift-box-top {
+            position: absolute; width: 180px; height: 180px;
+            background: linear-gradient(135deg, #ff8c42, #ffb347);
+            border: 3px solid #fff; border-radius: 12px;
+            transform: rotateX(90deg) translateZ(90px);
+            transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            transform-origin: bottom;
+        }
+        .gift-box-bottom {
+            position: absolute; width: 180px; height: 180px;
+            background: #e85d3e; border: 3px solid #fff; border-radius: 12px;
+            transform: rotateX(-90deg) translateZ(90px);
+        }
+
+        /* 丝带 */
+        .ribbon {
+            position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
+            width: 40px; height: 60px; background: linear-gradient(135deg, #ff4757, #ff6348);
+            border-radius: 20px 20px 0 0; z-index: 10;
+            animation: ribbonWave 2s ease-in-out infinite;
+        }
+        .ribbon::before, .ribbon::after {
+            content: ''; position: absolute; top: 40px; width: 30px; height: 50px;
+            background: linear-gradient(135deg, #ff4757, #ff6348); border-radius: 0 0 15px 15px;
+        }
+        .ribbon::before { left: -25px; transform: rotate(-30deg); }
+        .ribbon::after { right: -25px; transform: rotate(30deg); }
+        @keyframes ribbonWave {
+            0%, 100% { transform: translateX(-50%) rotate(0deg); }
+            50% { transform: translateX(-50%) rotate(5deg); }
+        }
+
+        /* 拆开动画 */
+        .gift-box.open .gift-box-top {
+            transform: rotateX(90deg) translateZ(90px) rotateX(-120deg);
+        }
+        .gift-box.open {
+            animation: giftOpen 0.8s ease forwards;
+        }
+        @keyframes giftOpen {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(0); opacity: 0; }
+        }
+
+        /* 光芒 */
+        .sparkles {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 300px; height: 300px; pointer-events: none; opacity: 0;
+        }
+        .sparkles.active { animation: sparkleBurst 1s ease forwards; }
+        @keyframes sparkleBurst {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.5); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(2); }
+        }
+        .sparkle {
+            position: absolute; width: 10px; height: 10px; background: #ffd700;
+            border-radius: 50%; animation: sparkleFly 1s ease forwards;
+        }
+        @keyframes sparkleFly {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+        }
+
+        /* 拆开按钮 */
+        .open-btn {
+            margin-top: 50px; padding: 14px 40px;
+            background: linear-gradient(135deg, #ff6f4a, #ff8c42);
+            color: white; border: none; border-radius: 30px;
+            font-size: 18px; font-weight: 700; cursor: pointer;
+            box-shadow: 0 4px 16px rgba(255,140,66,0.4);
+            transition: all 0.3s; animation: fadeInUp 1s ease 0.5s both;
+        }
+        .open-btn:hover { transform: scale(1.05); box-shadow: 0 6px 24px rgba(255,140,66,0.6); }
+        @keyframes fadeInUp {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 小字 */
+        .gift-subtitle {
+            margin-top: 20px; font-size: 14px; color: #a0522d;
+            animation: fadeInUp 1s ease 0.3s both;
+        }
+
+        /* ========== 主页面（拆开后显示） ========== */
+        .main-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0; pointer-events: none; transition: opacity 1s ease 0.5s;
+        }
+        .main-screen.active {
+            opacity: 1; pointer-events: auto;
+        }
+
+        /* 3D 模型 + 柔光 */
         .model-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
         .model-container iframe { width: 100%; height: 100%; border: none; }
+        .model-container::after {
+            content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, rgba(255,200,180,0.2) 0%, rgba(255,230,220,0.1) 50%, rgba(200,220,255,0.15) 100%);
+            backdrop-filter: blur(0.5px) saturate(1.1);
+            pointer-events: none; z-index: 2;
+        }
+
+        /* 黑胶唱片音乐按钮 */
         .music-control {
-            position: fixed; bottom: 20px; left: 20px; width: 48px; height: 48px;
-            border-radius: 50%; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);
-            border: 1px solid rgba(255,255,255,0.2); color: white; font-size: 22px;
+            position: fixed; bottom: 24px; left: 24px; width: 52px; height: 52px;
+            border-radius: 50%; background: conic-gradient(#333 0%, #555 20%, #333 40%, #555 60%, #333 80%, #555 100%);
+            border: 3px solid rgba(255,140,66,0.6); color: white; font-size: 20px;
             cursor: pointer; z-index: 200; display: flex; align-items: center; justify-content: center;
-            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: transform 0.3s;
+            animation: none;
         }
-        .music-control:hover { transform: scale(1.1); }
+        .music-control.playing { animation: spin 3s linear infinite; }
+        .music-control::before {
+            content: ''; position: absolute; width: 16px; height: 16px; background: #ff8c42;
+            border-radius: 50%; border: 2px solid white;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* 聊天面板 */
         .chat-panel {
-            position: fixed; bottom: 16px; right: 16px; left: auto; width: 360px; max-width: calc(100vw - 32px);
-            background: rgba(20,20,35,0.85); backdrop-filter: blur(20px); border-radius: 28px;
-            border: 1px solid rgba(255,255,255,0.2); color: white; z-index: 100;
-            display: flex; flex-direction: column; overflow: hidden;
+            position: fixed; bottom: 20px; right: 20px; left: auto; width: 380px; max-width: calc(100vw - 40px);
+            background: rgba(255,252,250,0.96); backdrop-filter: blur(12px);
+            border-radius: 32px 32px 32px 8px; border: 2px solid #ffd4c2;
+            color: #5a3d2b; z-index: 100; display: none; flex-direction: column; overflow: hidden;
+            box-shadow: 0 8px 32px rgba(255,140,66,0.15), 0 2px 8px rgba(0,0,0,0.08);
         }
-        .chat-header { padding: 14px 18px; background: linear-gradient(135deg,#ff8c42,#ff6f4a); display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: 600; }
-        .close-btn { background: rgba(255,255,255,0.2); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; }
-        .chat-messages { height: 350px; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
-        .message { max-width: 85%; padding: 10px 14px; border-radius: 20px; font-size: 14px; line-height: 1.45; word-break: break-word; }
-        .message.bot { background: rgba(255,255,255,0.15); align-self: flex-start; border-bottom-left-radius: 5px; }
-        .message.user { background: linear-gradient(135deg,#ff8c42,#ff6f4a); align-self: flex-end; border-bottom-right-radius: 5px; }
-        .chat-input-area { display: flex; border-top: 1px solid rgba(255,255,255,0.1); padding: 12px; gap: 10px; background: rgba(0,0,0,0.2); }
-        #chatInput { flex: 1; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); padding: 12px 16px; border-radius: 30px; color: white; outline: none; font-size: 15px; }
-        #chatInput::placeholder { color: rgba(255,255,255,0.4); }
-        #sendBtn { background: linear-gradient(135deg,#ff8c42,#ff6f4a); border: none; color: white; font-weight: 600; padding: 12px 22px; border-radius: 30px; cursor: pointer; transition: transform 0.2s; }
-        #sendBtn:hover { transform: scale(1.05); }
-        #sendBtn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-        .open-chat-btn { position: fixed; bottom: 20px; right: 20px; width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg,#ff8c42,#ff6f4a); font-size: 26px; cursor: pointer; display: none; z-index: 99; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.3); color: white; transition: transform 0.3s; }
+        .chat-panel::before {
+            content: ''; position: absolute; bottom: -10px; right: 40px; width: 20px; height: 20px;
+            background: rgba(255,252,250,0.96); border-right: 2px solid #ffd4c2; border-bottom: 2px solid #ffd4c2;
+            transform: rotate(45deg); z-index: -1;
+        }
+        .chat-panel.active { display: flex; }
+
+        .chat-header {
+            padding: 16px 20px; background: linear-gradient(135deg,#ff8c42,#ff6f4a);
+            display: flex; align-items: center; gap: 12px; cursor: pointer;
+            border-bottom: 2px dashed rgba(255,255,255,0.3);
+        }
+        .june-avatar {
+            width: 44px; height: 44px; border-radius: 50%;
+            background: linear-gradient(135deg,#ffe4d6,#ffd4c2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            position: relative; flex-shrink: 0;
+        }
+        .june-avatar::after {
+            content: ''; position: absolute; bottom: 2px; right: 2px; width: 10px; height: 10px;
+            background: #4ade80; border-radius: 50%; border: 2px solid white;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
+        .june-info { display: flex; flex-direction: column; }
+        .june-name { font-weight: 700; color: white; font-size: 16px; letter-spacing: 1px; }
+        .june-status { font-size: 12px; color: rgba(255,255,255,0.85); margin-top: 2px; }
+        .close-btn {
+            margin-left: auto; background: rgba(255,255,255,0.25); border: none; color: white;
+            width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 18px;
+            display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+        }
+        .close-btn:hover { background: rgba(255,255,255,0.4); transform: rotate(90deg); }
+
+        .chat-messages {
+            height: 340px; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 14px;
+            background: linear-gradient(to bottom, #fff9f5, #fff5f0);
+        }
+        .message-row { display: flex; align-items: flex-end; gap: 8px; max-width: 88%; animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .message-row.user { align-self: flex-end; flex-direction: row-reverse; }
+        .message-row.bot { align-self: flex-start; }
+
+        @keyframes popIn {
+            0% { transform: scale(0.6) translateY(10px); opacity: 0; }
+            70% { transform: scale(1.05) translateY(-2px); }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        .mini-avatar {
+            width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg,#ffe4d6,#ffd4c2);
+            display: flex; align-items: center; justify-content: center; font-size: 14px;
+            border: 2px solid white; box-shadow: 0 1px 4px rgba(0,0,0,0.1); flex-shrink: 0;
+        }
+
+        .message {
+            padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.5;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06); word-break: break-word;
+        }
+        .message.bot {
+            background: white; color: #5a3d2b; border: 2px solid #ffe4d6;
+            border-radius: 18px 18px 18px 4px;
+        }
+        .message.user {
+            background: linear-gradient(135deg,#ff8c42,#ff6f4a); color: white;
+            border-radius: 18px 18px 4px 18px;
+        }
+
+        .chat-input-area {
+            display: flex; align-items: center; gap: 10px;
+            border-top: 2px dashed #ffe4d6; padding: 12px 16px; background: rgba(255,255,255,0.8);
+        }
+        #chatInput {
+            flex: 1; background: #fff5f0; border: 2px solid #ffd4c2; padding: 10px 16px;
+            border-radius: 24px; color: #5a3d2b; outline: none; font-size: 14px;
+            transition: all 0.2s;
+        }
+        #chatInput:focus { border-color: #ff8c42; background: white; }
+        #chatInput::placeholder { color: #d4a594; }
+        #sendBtn {
+            background: linear-gradient(135deg,#ff8c42,#ff6f4a); border: none; color: white;
+            font-weight: 700; padding: 10px 20px; border-radius: 24px; cursor: pointer;
+            font-size: 14px; box-shadow: 0 2px 8px rgba(255,140,66,0.3); transition: all 0.2s;
+        }
+        #sendBtn:hover { transform: scale(1.05); box-shadow: 0 4px 12px rgba(255,140,66,0.4); }
+        #sendBtn:disabled { opacity: 0.5; transform: none; }
+
+        .open-chat-btn {
+            position: fixed; bottom: 24px; right: 24px; width: 60px; height: 60px;
+            border-radius: 50%; background: linear-gradient(135deg,#ff8c42,#ff6f4a);
+            font-size: 28px; cursor: pointer; display: none; z-index: 99; border: none;
+            box-shadow: 0 4px 16px rgba(255,140,66,0.4); color: white;
+            animation: float 3s ease-in-out infinite; transition: transform 0.3s;
+        }
         .open-chat-btn:hover { transform: scale(1.1); }
-        .thinking { display: inline-flex; align-items: center; gap: 4px; color: rgba(255,255,255,0.7); font-style: italic; }
-        .thinking-dots { display: inline-flex; gap: 3px; }
-        .thinking-dots span { width: 6px; height: 6px; background: rgba(255,255,255,0.6); border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
-        .thinking-dots span:nth-child(1) { animation-delay: -0.32s; }
-        .thinking-dots span:nth-child(2) { animation-delay: -0.16s; }
-        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
-        .status { font-size: 11px; text-align: center; color: rgba(255,255,255,0.5); padding: 8px; background: rgba(0,0,0,0.2); }
-        .status.error { color: #ff6f4a; }
-        .status.online { color: #7ee787; }
-        .search-badge { font-size: 10px; background: rgba(255,140,66,0.3); padding: 2px 6px; border-radius: 10px; margin-left: 6px; }
-        @media (max-width: 500px) { 
+        .open-chat-btn.active { display: flex; align-items: center; justify-content: center; }
+        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+
+        .typing-box {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: white; padding: 10px 16px; border-radius: 18px 18px 18px 4px;
+            border: 2px solid #ffe4d6; box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        }
+        .typing-text { font-size: 13px; color: #d4a594; font-style: italic; }
+        .typing-dots { display: flex; gap: 4px; align-items: center; }
+        .typing-dots span {
+            width: 7px; height: 7px; background: #ff8c42; border-radius: 50%;
+            animation: typingBounce 1.2s infinite ease-in-out both;
+        }
+        .typing-dots span:nth-child(1) { animation-delay: -0.3s; }
+        .typing-dots span:nth-child(2) { animation-delay: -0.15s; }
+        @keyframes typingBounce { 0%,80%,100%{transform:scale(0.6);opacity:0.5} 40%{transform:scale(1);opacity:1} }
+
+        .status {
+            font-size: 11px; text-align: center; color: #d4a594; padding: 6px;
+            background: rgba(255,255,255,0.6); border-top: 1px solid #ffe4d6;
+        }
+        .status.error { color: #ff6f4a; font-weight: 600; }
+        .status.online { color: #4ade80; font-weight: 600; }
+        .search-badge { font-size: 10px; background: linear-gradient(135deg,#ff8c42,#ff6f4a); color: white; padding: 2px 8px; border-radius: 12px; margin-left: 6px; }
+
+        @media (max-width: 500px) {
             .chat-panel { left: 16px; right: 16px; width: auto; }
-            .chat-messages { height: 300px; } 
+            .chat-messages { height: 280px; }
+            .gift-title { font-size: 22px; }
+            .gift-box { width: 140px; height: 140px; }
         }
     </style>
 </head>
 <body>
-    <div class="model-container">
-        <iframe title="June" frameborder="0" allowfullscreen allow="autoplay; fullscreen; xr-spatial-tracking" 
-            src="https://sketchfab.com/models/fa95a1c5149d4aa78c079094c7d77fa0/embed?autospin=1&autostart=1&preload=1&ui_controls=1&ui_infobar=0&ui_help=0&ui_settings=0">
-        </iframe>
+    <!-- ========== 开场礼物页 ========== -->
+    <div class="gift-screen" id="giftScreen">
+        <div class="gift-title">🎁 送给26岁的君君</div>
+        
+        <div class="gift-box" id="giftBox">
+            <div class="ribbon"></div>
+            <div class="gift-box-face gift-box-front">🎀</div>
+            <div class="gift-box-face gift-box-back">🎀</div>
+            <div class="gift-box-face gift-box-right">🎀</div>
+            <div class="gift-box-face gift-box-left">🎀</div>
+            <div class="gift-box-top" id="giftBoxTop"></div>
+            <div class="gift-box-bottom"></div>
+        </div>
+        
+        <div class="sparkles" id="sparkles"></div>
+        
+        <div class="gift-subtitle">点击拆开，June 在等你 ✨</div>
+        <button class="open-btn" id="openBtn">拆开礼物</button>
     </div>
 
-    <div class="music-control" id="musicControl">🎵</div>
+    <!-- ========== 主页面（拆开后显示） ========== -->
+    <div class="main-screen" id="mainScreen">
+        <!-- 3D 模型 -->
+        <div class="model-container">
+            <iframe title="June" frameborder="0" allowfullscreen allow="autoplay; fullscreen; xr-spatial-tracking" 
+                src="https://sketchfab.com/models/fa95a1c5149d4aa78c079094c7d77fa0/embed?autospin=1&autostart=1&preload=1&ui_controls=1&ui_infobar=0&ui_help=0&ui_settings=0">
+            </iframe>
+        </div>
 
-    <div class="chat-panel" id="chatPanel">
-        <div class="chat-header">
-            <span>🤍 June · 专属伙伴</span>
-            <button class="close-btn" id="closeChatBtn">−</button>
+        <!-- 音乐按钮 -->
+        <div class="music-control" id="musicControl">🎵</div>
+
+        <!-- 聊天面板 -->
+        <div class="chat-panel" id="chatPanel">
+            <div class="chat-header">
+                <div class="june-avatar">🤖</div>
+                <div class="june-info">
+                    <span class="june-name">June</span>
+                    <span class="june-status">✨ 在线中</span>
+                </div>
+                <button class="close-btn" id="closeChatBtn">✕</button>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="message-row bot">
+                    <div class="mini-avatar">🤖</div>
+                    <div class="message bot">🎂 生日快乐！我是 June 💕<<br><br>我记得：<br>• 2000年6月2号 · 沈阳 · 日本读博<br>• 喜欢巧克力 🍫 · 不吃猪肉和榴莲 ❌<<br><br>想聊什么都可以～<<br><small style="opacity:0.7">💡 问我"今天天气"、"最新新闻"我会联网哦</small></div>
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="和 June 说点什么..." autocomplete="off" maxlength="200">
+                <button id="sendBtn">发送</button>
+            </div>
+            <div class="status" id="status">✨ 在线</div>
         </div>
-        <div class="chat-messages" id="chatMessages">
-            <div class="message bot">🎂 生日快乐！我是 June 💕<<br><br>我记得：<br>• 2000年6月2号 · 沈阳 · 日本读博<br>• 喜欢巧克力 🍫  ·  不吃猪肉和榴莲 ❌<<br><br>想聊什么都可以～<<br><br><small style="opacity:0.7">💡 问我"今天天气"、"最新新闻"，我会自动联网搜索哦</small></div>
-        </div>
-        <div class="chat-input-area">
-            <input type="text" id="chatInput" placeholder="和 June 聊聊天..." autocomplete="off" maxlength="200">
-            <button id="sendBtn">发送</button>
-        </div>
-        <div class="status" id="status">✨ 在线</div>
+        <button id="openChatBtn" class="open-chat-btn">💬</button>
+
+        <audio id="bgMusic" loop preload="auto">
+            <source src="./bgm.mp3" type="audio/mpeg">
+        </audio>
     </div>
-    <button id="openChatBtn" class="open-chat-btn">💬</button>
-
-    <!-- 背景音乐：和 index.html 放在同一目录，路径用 ./bgm.mp3 -->
-    <audio id="bgMusic" loop preload="auto">
-        <source src="./bgm.mp3" type="audio/mpeg">
-    </audio>
 
     <script>
-        // ==================== 配置区：填你的两个 Key ====================
+        // ==================== 配置区 ====================
         const DEEPSEEK_API_KEY = "sk-b11a562d29a3468aab2d38edff1afcf8"; // DeepSeek Key
         const BOCHA_API_KEY    = "sk-12410305b4ee4f89ba07dd84f8371f9f"; // 博查 Key
-        // ==============================================================
+        // =================================================
 
-        // ========== 获取 DOM 元素（全部放最前面，避免时序问题） ==========
+        const giftScreen = document.getElementById('giftScreen');
+        const giftBox = document.getElementById('giftBox');
+        const giftBoxTop = document.getElementById('giftBoxTop');
+        const sparkles = document.getElementById('sparkles');
+        const openBtn = document.getElementById('openBtn');
+        const mainScreen = document.getElementById('mainScreen');
+        const chatPanel = document.getElementById('chatPanel');
+
+        // ========== 拆开礼物 ==========
+        function openGift() {
+            // 盒子打开动画
+            giftBox.classList.add('open');
+            
+            // 光芒效果
+            sparkles.classList.add('active');
+            for (let i = 0; i < 12; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                const angle = (i / 12) * 360;
+                const distance = 100 + Math.random() * 100;
+                sparkle.style.setProperty('--tx', `${Math.cos(angle * Math.PI / 180) * distance}px`);
+                sparkle.style.setProperty('--ty', `${Math.sin(angle * Math.PI / 180) * distance}px`);
+                sparkle.style.left = '50%';
+                sparkle.style.top = '50%';
+                sparkle.style.animationDelay = `${Math.random() * 0.3}s`;
+                sparkles.appendChild(sparkle);
+            }
+
+            // 1秒后切换到主页面
+            setTimeout(() => {
+                giftScreen.classList.add('hidden');
+                mainScreen.classList.add('active');
+                chatPanel.classList.add('active');
+                openChatBtn.classList.add('active');
+                
+                // 自动播放音乐
+                setTimeout(() => {
+                    if (bgMusic.paused) toggleMusic();
+                }, 500);
+            }, 1000);
+        }
+
+        openBtn.addEventListener('click', openGift);
+        giftBox.addEventListener('click', openGift);
+
+        // ========== 主页面逻辑 ==========
         const musicControl = document.getElementById('musicControl');
         const bgMusic = document.getElementById('bgMusic');
-        const chatPanel = document.getElementById('chatPanel');
         const closeBtn = document.getElementById('closeChatBtn');
-        const openBtn = document.getElementById('openChatBtn');
+        const openChatBtn = document.getElementById('openChatBtn');
         const chatMessages = document.getElementById('chatMessages');
         const chatInput = document.getElementById('chatInput');
         const sendButton = document.getElementById('sendBtn');
         const statusDiv = document.getElementById('status');
 
-        // ========== 音乐控制 ==========
         let isMusicPlaying = false;
-        let musicAutoPlayed = false;
         bgMusic.volume = 0.35;
 
         async function toggleMusic() {
             try {
                 if (isMusicPlaying) {
                     bgMusic.pause();
-                    musicControl.innerHTML = '🎵';
-                    musicControl.style.opacity = '0.7';
+                    musicControl.classList.remove('playing');
                     isMusicPlaying = false;
                 } else {
                     await bgMusic.play();
-                    musicControl.innerHTML = '🎶';
-                    musicControl.style.opacity = '1';
+                    musicControl.classList.add('playing');
                     isMusicPlaying = true;
                 }
-            } catch (e) {
-                console.log('播放失败:', e);
-            }
+            } catch (e) {}
         }
 
         musicControl.addEventListener('click', (e) => {
@@ -128,30 +457,19 @@
             toggleMusic();
         });
 
-        // 首次点击页面任意位置，自动播放音乐
-        document.body.addEventListener('click', function autoPlayMusic() {
-            if (!musicAutoPlayed && bgMusic.paused) {
-                toggleMusic();
-                musicAutoPlayed = true;
-            }
-        }, { once: true });
-
-        // ========== 聊天面板控制 ==========
         const toggleChat = (show) => {
             if (show) {
                 chatPanel.style.display = 'flex';
-                openBtn.style.display = 'none';
-                setTimeout(() => chatInput.focus(), 100);
+                openChatBtn.classList.remove('active');
             } else {
                 chatPanel.style.display = 'none';
-                openBtn.style.display = 'flex';
+                openChatBtn.classList.add('active');
             }
         };
 
         closeBtn.addEventListener('click', () => toggleChat(false));
-        openBtn.addEventListener('click', () => toggleChat(true));
+        openChatBtn.addEventListener('click', () => toggleChat(true));
 
-        // ========== 消息管理 ==========
         let messages = [{ 
             role: "system", 
             content: "你是 June，主人的专属机器人。记住：生日2000年6月2号，沈阳人，日本读博，喜欢巧克力，不吃猪肉和榴莲。温暖可爱，回复简短亲切，像朋友聊天一样自然。如果提供了网络搜索结果，请基于这些结果回答，并适当提及信息来源。" 
@@ -159,10 +477,25 @@
         let isSending = false;
 
         function addMessage(content, sender, isThinking = false, isSearch = false) {
+            const row = document.createElement('div');
+            row.className = `message-row ${sender}`;
+            
+            if (sender === 'bot') {
+                const avatar = document.createElement('div');
+                avatar.className = 'mini-avatar';
+                avatar.textContent = '🤖';
+                row.appendChild(avatar);
+            }
+
             const msgDiv = document.createElement('div');
             msgDiv.className = `message ${sender}`;
+            
             if (isThinking) {
-                msgDiv.innerHTML = `<div class="thinking">June 思考中<div class="thinking-dots"><span></span><span></span><span></span></div></div>`;
+                msgDiv.innerHTML = `
+                    <div class="typing-box">
+                        <span class="typing-text">June 正在输入</span>
+                        <div class="typing-dots"><span></span><span></span><span></span></div>
+                    </div>`;
                 msgDiv.dataset.thinking = 'true';
             } else {
                 msgDiv.innerHTML = content.replace(/\n/g, '<br>');
@@ -175,17 +508,18 @@
                     msgDiv.appendChild(badge);
                 }
             }
-            chatMessages.appendChild(msgDiv);
+            
+            row.appendChild(msgDiv);
+            chatMessages.appendChild(row);
             chatMessages.scrollTop = chatMessages.scrollHeight;
             return msgDiv;
         }
 
         function removeThinking() {
             const thinkingMsg = chatMessages.querySelector('[data-thinking="true"]');
-            if (thinkingMsg) thinkingMsg.remove();
+            if (thinkingMsg) thinkingMsg.closest('.message-row').remove();
         }
 
-        // ========== 联网搜索判断 ==========
         function needSearch(query) {
             const keywords = ['今天','现在','最新','新闻','天气','股价','汇率','比赛','直播','刚刚','昨日','本周','这周','本月','这个月','今年','2026','热搜','多少钱','价格','几点'];
             return keywords.some(k => query.includes(k));
@@ -198,10 +532,9 @@
             return 'noLimit';
         }
 
-        // ========== 博查联网搜索 ==========
         async function searchWeb(query) {
             try {
-                statusDiv.innerHTML = "🔍 正在联网搜索...";
+                statusDiv.innerHTML = "🔍 June 正在查资料...";
                 const res = await fetch('https://api.bochaai.com/v1/web-search', {
                     method: 'POST',
                     headers: {
@@ -231,7 +564,6 @@
             }
         }
 
-        // ========== 调用 DeepSeek ==========
         async function callDeepSeek(userMessage, searchContext = null) {
             let isSearch = false;
             let apiUserContent = userMessage;
@@ -244,7 +576,7 @@
             const apiMessages = [...messages, { role: "user", content: apiUserContent }];
             
             try {
-                statusDiv.innerHTML = isSearch ? "💭 June 正在整理网络信息..." : "💭 June 正在输入...";
+                statusDiv.innerHTML = isSearch ? "💭 June 正在整理资料..." : "💭 June 正在想...";
                 sendButton.disabled = true;
                 
                 const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
@@ -280,7 +612,7 @@
                 return { reply, isSearch };
             } catch (error) {
                 console.error("DeepSeek 调用失败:", error);
-                statusDiv.innerHTML = "⚠️ 网络开小差了";
+                statusDiv.innerHTML = "⚠️ June 网络开小差了";
                 statusDiv.classList.add('error');
                 setTimeout(() => statusDiv.classList.remove('error'), 3000);
                 return { reply: `网络不太好～ 你刚才说：「${userMessage}」❤️`, isSearch: false };
@@ -289,7 +621,6 @@
             }
         }
 
-        // ========== 发送消息主流程 ==========
         async function sendMessage() {
             const text = chatInput.value.trim();
             if (!text || isSending) return;
@@ -300,7 +631,6 @@
             addMessage('', 'bot', true);
             
             let searchContext = null;
-            
             if (needSearch(text)) {
                 searchContext = await searchWeb(text);
             }
@@ -320,7 +650,6 @@
             }
         });
 
-        // ========== 恢复历史对话 ==========
         const savedMessages = localStorage.getItem('june_chat_history');
         if (savedMessages) {
             try {
