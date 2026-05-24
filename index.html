@@ -717,6 +717,333 @@
             align-items: center; justify-content: center; flex-direction: column;
         }
         .night-overlay.active { opacity: 1; pointer-events: auto; }
+        /* 点击晚安后，overlay 完全淡出，不再遮挡任何内容 */
+        .night-overlay.goodnight {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1.5s ease;
+        }
+        .night-overlay.goodnight .night-orb,
+        .night-overlay.goodnight .night-text,
+        .night-overlay.goodnight .night-sub,
+        .night-overlay.goodnight .night-btn {
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        /* 深夜模式下的 body 微弱深色背景 */
+        body.night-active {
+            background: linear-gradient(160deg, #e8e0d8 0%, #ddd5cc 100%);
+        }
+
+        /* ========== 距离的温度 ========== */
+        .distance-widget {
+            position: absolute;
+            top: 52px;
+            left: 12px;
+            z-index: 60;
+            background: rgba(255,255,255,0.72);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(201,160,96,0.18);
+            border-radius: 20px;
+            padding: 16px 20px 14px;
+            width: 168px;
+            opacity: 0;
+            transform: translateY(16px) scale(0.92);
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .main-screen.active .distance-widget.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+        /* 深夜模式：距离 widget 变暗暖色 */
+        body.night-active .distance-widget {
+            background: rgba(30,20,45,0.75);
+            border-color: rgba(255,200,180,0.2);
+        }
+        .distance-plane {
+            font-size: 18px;
+            text-align: center;
+            margin-bottom: 6px;
+            opacity: 0.7;
+            animation: planeBob 3s ease-in-out infinite;
+        }
+        @keyframes planeBob {
+            0%,100% { transform: translateY(0) rotate(-5deg); }
+            50% { transform: translateY(-3px) rotate(5deg); }
+        }
+        .distance-route {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+        .dist-city {
+            font-size: 11px;
+            color: #8b6f5c;
+            letter-spacing: 1px;
+            font-family: 'KaiTi', 'STKaiti', '楷体', serif;
+        }
+        /* 深夜模式：城市名变色 */
+        body.night-active .dist-city {
+            color: rgba(255,220,200,0.8);
+        }
+        .dist-line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to right, rgba(201,160,96,0.3), rgba(201,160,96,0.1) 50%, rgba(201,160,96,0.3));
+            position: relative;
+        }
+        .dist-line::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #c9a060;
+            animation: dotPulse 2s ease-in-out infinite;
+        }
+        @keyframes dotPulse {
+            0%,100% { box-shadow: 0 0 2px rgba(201,160,96,0.4); }
+            50% { box-shadow: 0 0 8px rgba(201,160,96,0.7); }
+        }
+        .distance-km {
+            font-size: 22px;
+            font-weight: 700;
+            color: #8b4513;
+            text-align: center;
+            letter-spacing: 1px;
+            line-height: 1.2;
+            font-family: 'Noto Serif SC', 'KaiTi', serif;
+            transition: color 0.5s, text-shadow 0.5s;
+        }
+        /* 深夜模式：数字发暖橙光 */
+        body.night-active .distance-km {
+            color: #ffd4c2;
+            text-shadow: 0 0 10px rgba(255,140,66,0.5), 0 0 24px rgba(255,140,66,0.2);
+        }
+        .distance-text {
+            font-size: 11px;
+            color: rgba(139,69,19,0.55);
+            text-align: center;
+            margin-top: 6px;
+            line-height: 1.5;
+            font-family: 'KaiTi', 'STKaiti', '楷体', serif;
+            min-height: 28px;
+            transition: color 0.5s;
+        }
+        /* 深夜模式：文案变色 */
+        body.night-active .distance-text {
+            color: rgba(255,220,200,0.6);
+        }
+        /* 底部微光 */
+        .distance-glow {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 40px;
+            background: radial-gradient(ellipse, rgba(201,160,96,0.15), transparent 70%);
+            pointer-events: none;
+        }
+
+        /* ========== 6月2日 生日特别弹窗 ========== */
+        .birthday-gift-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 5000;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.6s ease;
+        }
+        .birthday-gift-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .birthday-gift-content {
+            background: linear-gradient(180deg, #fffdf9 0%, #fff5ed 100%);
+            border: 1px solid rgba(201,160,96,0.2);
+            border-radius: 24px;
+            padding: 48px 40px 40px;
+            width: 340px;
+            max-width: 88vw;
+            text-align: center;
+            position: relative;
+            box-shadow:
+                0 20px 60px rgba(0,0,0,0.15),
+                0 0 0 1px rgba(201,160,96,0.1) inset;
+            transform: scale(0.9);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .birthday-gift-overlay.show .birthday-gift-content {
+            transform: scale(1);
+        }
+        .birthday-gift-close {
+            position: absolute;
+            top: 16px; right: 20px;
+            font-size: 18px;
+            color: rgba(139,69,19,0.35);
+            cursor: pointer;
+            transition: color 0.3s;
+            line-height: 1;
+        }
+        .birthday-gift-close:hover { color: #8b4513; }
+        .birthday-gift-hint {
+            font-size: 13px;
+            color: rgba(155,42,59,0.6);
+            letter-spacing: 3px;
+            margin-bottom: 16px;
+            font-family: 'KaiTi', 'STKaiti', '楷体', serif;
+        }
+        .birthday-gift-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #8b4513;
+            letter-spacing: 4px;
+            margin-bottom: 12px;
+            font-family: 'KaiTi', 'STKaiti', '楷体', serif;
+        }
+        .birthday-gift-sub {
+            font-size: 14px;
+            color: rgba(139,69,19,0.5);
+            letter-spacing: 2px;
+            margin-bottom: 32px;
+        }
+        .birthday-play-btn {
+            width: 72px; height: 72px;
+            border-radius: 50%;
+            border: 2px solid rgba(201,160,96,0.3);
+            background: linear-gradient(135deg, #faf0e6 0%, #f5e6d8 100%);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            margin-bottom: 20px;
+            box-shadow: 0 4px 16px rgba(201,160,96,0.15);
+        }
+        .birthday-play-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 24px rgba(201,160,96,0.25);
+            border-color: rgba(201,160,96,0.5);
+        }
+        .birthday-play-btn:active { transform: scale(0.95); }
+        .birthday-play-btn.playing {
+            border-color: rgba(155,42,59,0.4);
+            background: linear-gradient(135deg, #fff0f0 0%, #ffe8e8 100%);
+        }
+        .birthday-play-icon {
+            font-size: 24px;
+            color: #8b4513;
+            margin-left: 4px;
+            transition: all 0.3s;
+        }
+        .birthday-play-btn.playing .birthday-play-icon {
+            font-size: 20px;
+        }
+        /* 波形动画 */
+        .birthday-waveform {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            height: 24px;
+            margin-bottom: 16px;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        .birthday-waveform.active { opacity: 1; }
+        .birthday-waveform span {
+            display: inline-block;
+            width: 3px;
+            height: 6px;
+            background: rgba(201,160,96,0.4);
+            border-radius: 2px;
+            animation: waveform 1s ease-in-out infinite;
+        }
+        .birthday-waveform span:nth-child(1) { animation-delay: 0s; }
+        .birthday-waveform span:nth-child(2) { animation-delay: 0.1s; }
+        .birthday-waveform span:nth-child(3) { animation-delay: 0.2s; }
+        .birthday-waveform span:nth-child(4) { animation-delay: 0.3s; }
+        .birthday-waveform span:nth-child(5) { animation-delay: 0.15s; }
+        .birthday-waveform span:nth-child(6) { animation-delay: 0.25s; }
+        .birthday-waveform span:nth-child(7) { animation-delay: 0.05s; }
+        .birthday-waveform span:nth-child(8) { animation-delay: 0.35s; }
+        .birthday-waveform span:nth-child(9) { animation-delay: 0.2s; }
+        .birthday-waveform span:nth-child(10) { animation-delay: 0.1s; }
+        @keyframes waveform {
+            0%, 100% { height: 6px; }
+            50% { height: 20px; }
+        }
+        .birthday-gift-note {
+            font-size: 14px;
+            color: rgba(139,69,19,0.55);
+            letter-spacing: 1px;
+            line-height: 1.8;
+            font-family: 'KaiTi', 'STKaiti', '楷体', serif;
+            animation: noteFade 0.8s ease both;
+        }
+        @keyframes noteFade {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 桔梗花动画 */
+        .distance-petal {
+            position: absolute;
+            top: 56px;
+            left: 154px;
+            z-index: 61;
+            font-size: 20px;
+            opacity: 0;
+            transform-origin: bottom center;
+            transition: opacity 1s ease 0.5s;
+            pointer-events: none;
+        }
+        .main-screen.active .distance-petal.show {
+            opacity: 0.85;
+        }
+        .petal-sway {
+            animation: petalSway 4s ease-in-out infinite;
+            transform-origin: bottom center;
+            filter: drop-shadow(0 2px 4px rgba(201,160,96,0.3));
+        }
+        @keyframes petalSway {
+            0%,100% { transform: rotate(-8deg) scale(1); }
+            25% { transform: rotate(6deg) scale(1.05); }
+            50% { transform: rotate(-4deg) scale(0.97); }
+            75% { transform: rotate(8deg) scale(1.03); }
+        }
+        /* 深夜模式：桔梗花变暗 */
+        body.night-active .petal-sway {
+            filter: drop-shadow(0 0 6px rgba(255,200,180,0.3));
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 500px) {
+            .distance-widget { top: 48px; left: 8px; width: 148px; padding: 12px 16px 11px; border-radius: 16px; }
+            .distance-km { font-size: 20px; }
+            .distance-text { font-size: 10px; }
+            .distance-petal { top: 52px; left: 138px; font-size: 18px; }
+            .birthday-gift-content { padding: 36px 28px 32px; width: 300px; }
+            .birthday-gift-title { font-size: 24px; }
+            .birthday-play-btn { width: 64px; height: 64px; }
+        }
+
         .night-stars {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none;
@@ -1010,6 +1337,30 @@
             </div>
         </div>
 
+        <!-- ========== 6月2日 生日特别弹窗 ========== -->
+        <div class="birthday-gift-overlay" id="birthdayGiftOverlay">
+            <div class="birthday-gift-content">
+                <div class="birthday-gift-close" id="birthdayGiftClose">&#10005;</div>
+                <div class="birthday-gift-hint">今天是特别的日子</div>
+                <div class="birthday-gift-title">&#127874; 生日快乐 君君</div>
+                <div class="birthday-gift-sub">点一下，有东西给你</div>
+                <button class="birthday-play-btn" id="birthdayPlayBtn">
+                    <span class="birthday-play-icon">&#9654;</span>
+                </button>
+                <div class="birthday-waveform" id="birthdayWaveform">
+                    <span></span><span></span><span></span><span></span><span></span>
+                    <span></span><span></span><span></span><span></span><span></span>
+                </div>
+                <div class="birthday-gift-note" id="birthdayGiftNote" style="display:none;">
+                    这是我唱给你的，生日快乐。
+                </div>
+                <!-- 隐藏音频 -->
+                <audio id="birthdayAudio" preload="none">
+                    <source src="birthday-song.mp3" type="audio/mpeg">
+                </audio>
+            </div>
+        </div>
+
         <!-- 顶部信息栏 -->
         <div class="info-bar" id="infoBar">
             <div class="info-item" id="weatherItem">
@@ -1119,6 +1470,22 @@
             <div class="status" id="status">&#10024; 在线</div>
         </div>
         <button id="openChatBtn" class="open-chat-btn">&#128172;</button>
+
+        <!-- ========== 距离的温度 ========== -->
+        <div class="distance-petal" id="distancePetal">
+            <div class="petal-sway">&#127802;</div>
+        </div>
+        <div class="distance-widget" id="distanceWidget">
+            <div class="distance-plane">&#9992;</div>
+            <div class="distance-route">
+                <span class="dist-city">广州</span>
+                <span class="dist-line"></span>
+                <span class="dist-city">东京</span>
+            </div>
+            <div class="distance-km" id="distanceKm">3010 km</div>
+            <div class="distance-text" id="distanceText">想你的时候，是 0 km</div>
+            <div class="distance-glow"></div>
+        </div>
     </div>
 
 <script>
@@ -1130,7 +1497,7 @@ const BOCHA_API_KEY = "sk-12410305b4ee4f89ba07dd84f8371f9f";
 const playlist = [
     { title: "花之舞", artist: "君君的生日礼物", src: "./bgm.mp3", cover: "&#127800;", lyric: "每一朵樱花都是我对你的祝福" },
     { title: "晴天", artist: "周杰伦", src: "./sunny_day.mp3", cover: "&#127774;", lyric: "从前从前有个人爱你很久" },
-    { title: "原来", artist: "林俊杰", src: "./yuanlai.mp3", cover: "&#127809;", lyric: "原来最疼痛的表情竟是没有情绪" }
+    { title: "原来", artist: "南征北战", src: "./yuanlai.mp3", cover: "&#127809;", lyric: "你说我们星座不相配" }
 ];
 
 let currentSongIndex = 0, playMode = 'loop', isPlayerOpen = false;
@@ -2320,10 +2687,11 @@ function checkNightMode() {
 }
 
 nightBtn.addEventListener('click', () => {
-    // 点击晚安后，只保留 June 小助手的微光
+    // 点击晚安后，overlay 完全淡出，body 加微弱深夜背景，不遮挡任何内容
     nightOverlay.classList.remove('active');
+    nightOverlay.classList.add('goodnight');
     nightGlow.classList.add('active');
-    document.body.style.filter = 'brightness(0.3)';
+    document.body.classList.add('night-active');
     showJuneBubble('&#127769; 晚安君君，做个好梦...');
 });
 
@@ -2333,9 +2701,10 @@ function checkMorning() {
     const hour = new Date().getHours();
     if (hour >= 6 && hour < 12 && !morningGreeted) {
         morningGreeted = true;
-        document.body.style.filter = '';
+        nightOverlay.classList.remove('goodnight');
         nightGlow.classList.remove('active');
         nightOverlay.classList.remove('active');
+        document.body.classList.remove('night-active');
         isNightMode = false;
         showJuneBubble('&#127774; 早上好！June 等你好久啦');
     }
@@ -2352,6 +2721,164 @@ const nightModeObserver = new MutationObserver(() => {
     }
 });
 nightModeObserver.observe(mainScreen, { attributes: true, attributeFilter: ['class'] });
+
+// ==================== 距离的温度 ====================
+const distanceWidget = document.getElementById('distanceWidget');
+const distancePetal = document.getElementById('distancePetal');
+const distanceText = document.getElementById('distanceText');
+const distanceKm = document.getElementById('distanceKm');
+
+// 7天文案轮播
+const distanceQuotes = {
+    normal: [
+        '想你的时候，是 0 km',         // 周日
+        '这颗心飞过去只要一秒',         // 周一
+        '3010km 也挡不住我喜欢你',      // 周二
+        '你在东京的此刻，我也在想你',   // 周三
+        '距离再远，也想抱到你',         // 周四
+        '同一片星空下的两个人',         // 周五
+        '又过了一周，离你更近一点'      // 周六
+    ],
+    night: [
+        '梦里的距离，是 0 km',          // 周日
+        '闭上眼，你就飞过来了',         // 周一
+        '再远，也会在梦里见到你',       // 周二
+        '东京的月光，和广州的一样吗',   // 周三
+        '晚安，明天也想抱到你',         // 周四
+        '星空下的两个人，各在一个时区', // 周五
+        '这周也快结束了，你什么时候回来'  // 周六
+    ]
+};
+
+function updateDistanceWidget() {
+    const day = new Date().getDay();
+    const hour = new Date().getHours();
+    const isNight = (hour >= 23 || hour < 6);
+    const quotes = isNight ? distanceQuotes.night : distanceQuotes.normal;
+    distanceText.textContent = quotes[day];
+    distanceKm.textContent = '3010 km';
+}
+
+// 主屏幕激活时显示距离 widget
+const distanceObserver = new MutationObserver(() => {
+    if (mainScreen.classList.contains('active')) {
+        updateDistanceWidget();
+        setTimeout(() => {
+            distanceWidget.classList.add('show');
+            distancePetal.classList.add('show');
+        }, 1200);
+    } else {
+        distanceWidget.classList.remove('show');
+        distancePetal.classList.remove('show');
+    }
+});
+distanceObserver.observe(mainScreen, { attributes: true, attributeFilter: ['class'] });
+
+// 深夜/白天切换时更新文案
+const originalCheckMorning = checkMorning;
+checkMorning = function() {
+    const wasMorningGreeted = morningGreeted;
+    originalCheckMorning();
+    if (wasMorningGreeted !== morningGreeted) {
+        updateDistanceWidget();
+    }
+};
+
+const originalCheckNightMode = checkNightMode;
+checkNightMode = function() {
+    const wasNightMode = isNightMode;
+    originalCheckNightMode();
+    if (isNightMode !== wasNightMode) {
+        updateDistanceWidget();
+    }
+};
+
+// ==================== 6月2日 生日特别弹窗 ====================
+const birthdayGiftOverlay = document.getElementById('birthdayGiftOverlay');
+const birthdayPlayBtn = document.getElementById('birthdayPlayBtn');
+const birthdayAudio = document.getElementById('birthdayAudio');
+const birthdayWaveform = document.getElementById('birthdayWaveform');
+const birthdayGiftNote = document.getElementById('birthdayGiftNote');
+const birthdayGiftClose = document.getElementById('birthdayGiftClose');
+let birthdaySongPlayed = false;
+
+function showBirthdayGift() {
+    const now = new Date();
+    const isBirthday = now.getMonth() === 5 && now.getDate() === 2; // 6月2日
+    if (!isBirthday) return;
+    if (!mainScreen.classList.contains('active')) return;
+    setTimeout(() => {
+        birthdayGiftOverlay.classList.add('show');
+    }, 1500);
+}
+
+// 主屏幕激活时检测生日
+const birthdayObserver = new MutationObserver(() => {
+    if (mainScreen.classList.contains('active')) {
+        showBirthdayGift();
+    }
+});
+birthdayObserver.observe(mainScreen, { attributes: true, attributeFilter: ['class'] });
+
+// 播放/暂停生日歌
+birthdayPlayBtn.addEventListener('click', () => {
+    if (birthdayAudio.paused) {
+        birthdayAudio.play().then(() => {
+            birthdayPlayBtn.classList.add('playing');
+            birthdayPlayBtn.querySelector('.birthday-play-icon').innerHTML = '&#10074;&#10074;';
+            birthdayWaveform.classList.add('active');
+            if (!birthdaySongPlayed) {
+                birthdaySongPlayed = true;
+                setTimeout(() => {
+                    birthdayGiftNote.style.display = 'block';
+                }, 2000);
+            }
+        }).catch(() => {
+            // 音频文件不存在时的提示
+            birthdayGiftNote.textContent = '音频文件还没准备好，记得把 birthday-song.mp3 放进目录里～';
+            birthdayGiftNote.style.display = 'block';
+        });
+    } else {
+        birthdayAudio.pause();
+        birthdayPlayBtn.classList.remove('playing');
+        birthdayPlayBtn.querySelector('.birthday-play-icon').innerHTML = '&#9654;';
+        birthdayWaveform.classList.remove('active');
+    }
+});
+
+// 音频结束自动重置
+birthdayAudio.addEventListener('ended', () => {
+    birthdayPlayBtn.classList.remove('playing');
+    birthdayPlayBtn.querySelector('.birthday-play-icon').innerHTML = '&#9654;';
+    birthdayWaveform.classList.remove('active');
+});
+
+// 关闭弹窗
+birthdayGiftClose.addEventListener('click', () => {
+    birthdayGiftOverlay.classList.remove('show');
+    birthdayAudio.pause();
+});
+
+// 测试模式：双击/双点 June 微光球
+// 短间隔（<350ms）= 切换白天/深夜
+// 长间隔（350-600ms）= 触发生日弹窗预览
+let nightGlowLastTap = 0;
+nightGlow.addEventListener('pointerdown', () => {
+    const now = Date.now();
+    const delta = now - nightGlowLastTap;
+    if (delta < 350) {
+        // 双点触发：切换白天/深夜
+        document.body.classList.toggle('night-active');
+        updateDistanceWidget();
+        const isNightNow = document.body.classList.contains('night-active');
+        showJuneBubble(isNightNow ? '&#127769; 深夜模式测试' : '&#127774; 白天模式测试');
+    } else if (delta < 600) {
+        // 稍慢双点：预览生日弹窗
+        birthdayGiftOverlay.classList.toggle('show');
+        showJuneBubble(birthdayGiftOverlay.classList.contains('show') ? '&#127874; 生日弹窗预览' : '&#127874; 关闭预览');
+    }
+    nightGlowLastTap = now;
+});
 
 // ==================== 初始化绑定 ====================
 loadSong(0);
