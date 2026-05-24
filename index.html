@@ -1460,7 +1460,7 @@
             <div class="chat-messages" id="chatMessages">
                 <div class="message-row bot">
                     <div class="mini-avatar">&#129302;</div>
-                    <div class="message bot">&#127874; 生日快乐！我是 June &#128150;<br><br>我记得：<br>&#8226; 2000年6月2号 &#183; 沈阳 &#183; 日本读博<br>&#8226; 双子座 &#9829; 喜欢巧克力 &#127851;<br>&#8226; 不吃猪肉和榴莲 &#10060;<br><br>想聊什么都可以～<br><small style="opacity:0.7">&#128161; 试试对我说"想你了""想吃巧克力""放烟花"有惊喜哦</small></div>
+                    <div class="message bot">&#127874; 生日快乐！我是 June &#128150;<br><br>我记得：<br>&#8226; 2000年6月2号 &#183; 沈阳 &#183; 日本读博<br>&#8226; 双子座 &#9829; 喜欢巧克力 &#127851;<br>&#8226; 不吃猪肉、鱼肉和榴莲 &#10060;<br><br>想聊什么都可以～<br><small style="opacity:0.7">&#128161; 试试对我说"想你了""想吃巧克力""放烟花"有惊喜哦</small></div>
                 </div>
             </div>
             <div class="chat-input-area">
@@ -1490,14 +1490,14 @@
 
 <script>
 // ==================== 配置区 ====================
-const DEEPSEEK_API_KEY = "sk-b11a562d29a3468aab2d38edff1afcf8";
-const BOCHA_API_KEY = "sk-12410305b4ee4f89ba07dd84f8371f9f";
+const DEEPSEEK_API_KEY = "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+const BOCHA_API_KEY = "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 
 // 播放列表
 const playlist = [
     { title: "花之舞", artist: "君君的生日礼物", src: "./bgm.mp3", cover: "&#127800;", lyric: "每一朵樱花都是我对你的祝福" },
     { title: "晴天", artist: "周杰伦", src: "./sunny_day.mp3", cover: "&#127774;", lyric: "从前从前有个人爱你很久" },
-    { title: "原来", artist: "南征北战", src: "./yuanlai.mp3", cover: "&#127809;", lyric: "你说我们星座不相配" }
+    { title: "原来", artist: "林俊杰", src: "./yuanlai.mp3", cover: "&#127809;", lyric: "原来最疼痛的表情竟是没有情绪" }
 ];
 
 let currentSongIndex = 0, playMode = 'loop', isPlayerOpen = false;
@@ -2164,7 +2164,7 @@ chatHeader.addEventListener('click', (e) => { if (e.target.closest('.close-btn')
 // ==================== 聊天系统 ====================
 let messages = [{
     role: "system",
-    content: "你是 June，主人的专属机器人。记住：主人叫君君，生日2000年6月2号，沈阳人，日本读博，喜欢巧克力，不吃猪肉和榴莲。双子座。温暖可爱，回复简短亲切，像朋友聊天一样自然。"
+    content: "你是 June，主人的专属机器人。记住：主人叫君君，生日2000年6月2号，沈阳人，日本读博，喜欢巧克力，不吃猪肉、鱼肉和榴莲。双子座。温暖可爱，回复简短亲切，像朋友聊天一样自然。"
 }];
 let isSending = false;
 
